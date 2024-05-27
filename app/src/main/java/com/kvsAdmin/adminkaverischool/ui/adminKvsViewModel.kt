@@ -11,7 +11,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.kvsAdmin.adminkaverischool.Constants.ADMINS
 import com.kvsAdmin.adminkaverischool.Constants.ANNOUNCEMET
-import com.kvsAdmin.adminkaverischool.Constants.SECTION
 import com.kvsAdmin.adminkaverischool.data.Announcement
 import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
 import com.kvsAdmin.adminkaverischool.states.errorMsg
@@ -20,7 +19,6 @@ import com.kvsAdmin.adminkaverischool.states.onError
 import com.kvsAdmin.adminkaverischool.states.signIn
 import com.kvsAdmin.util.OnErrorMessage
 import com.kvsAdmin.util.navigateTo
-import dagger.hilt.InstallIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

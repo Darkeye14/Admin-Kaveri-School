@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.kvsAdmin.adminkaverischool.ui.Screens.AnnounceScreen
 import com.kvsAdmin.adminkaverischool.ui.Screens.HomeScreen
 import com.kvsAdmin.adminkaverischool.ui.Screens.LoginScreen
+import com.kvsAdmin.adminkaverischool.ui.Screens.PostsScreen
 import com.kvsAdmin.adminkaverischool.ui.adminKvsViewModel
 
 @Composable
@@ -18,7 +19,7 @@ fun KvsNavigation(modifier: Modifier = Modifier) {
 
     NavHost(
         navController = navController,
-        startDestination = DestinationScreen.LoginScreen.route
+        startDestination = DestinationScreen.PostsScreen.route
     ){
         composable(DestinationScreen.LoginScreen.route){
             LoginScreen(navController = navController, viewModel = viewModel)
@@ -28,6 +29,9 @@ fun KvsNavigation(modifier: Modifier = Modifier) {
         }
         composable(DestinationScreen.AnnounceScreen.route){
             AnnounceScreen(navController = navController, viewModel = viewModel)
+        }
+        composable(DestinationScreen.PostsScreen.route){
+            PostsScreen(navController = navController, viewModel = viewModel)
         }
 
     }

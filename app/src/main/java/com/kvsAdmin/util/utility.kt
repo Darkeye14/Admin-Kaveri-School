@@ -88,7 +88,7 @@ fun TextCard(
                 text = text,
                 color = Color.White,
                 fontSize = fontSize.sp,
-              //  fontFamily = FontFamily.Cursive,
+                fontFamily = FontFamily.Cursive,
                 fontWeight = fontWeight,
             )
         }
