@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "736994737062",
+    "project_id": "kaveri-school-59ddc",
+    "storage_bucket": "kaveri-school-59ddc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:736994737062:android:f24764408ea8b8d28fed67",
+        "android_client_info": {
+          "package_name": "com.kvsAdmin.adminkaverischool"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG8JOScfJgrxaz3HjNFPCKxmninpY7O3A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:736994737062:android:8a620dd92baf949a8fed67",
+        "android_client_info": {
+          "package_name": "com.kvsSchool.kaverischool"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG8JOScfJgrxaz3HjNFPCKxmninpY7O3A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
