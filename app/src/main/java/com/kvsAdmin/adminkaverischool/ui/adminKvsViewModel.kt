@@ -147,7 +147,7 @@ class adminKvsViewModel @Inject constructor(
             .set(item)
     }
 
-    fun uploadImages(
+    fun onPost(
         selectedImage: MutableList<Uri?>,
         shortDisc: String,
         longDisc: String
@@ -162,9 +162,37 @@ class adminKvsViewModel @Inject constructor(
             uid = uid
         )
         db.collection(POSTS).document(uid).set(post)
+            .await()
+
+            if (selectedImage.isNotEmpty()){
+                selectedImage.forEach {
+                    uploadImage(it!!)
+                }
+            }
         inProgress.value = false
     }
 
+    fun uploadImage(
+        uri :Uri
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        val uid = UUID.randomUUID().toString()
+        val storageRef = storage.reference
+        val imageRef = storageRef.child("images/$uid")
+        val uploadTask = uri.let { it1 ->
+            imageRef
+                .putFile(it1)
+        }
+        uploadTask.addOnSuccessListener {
+            it.metadata
+                ?.reference
+                ?.downloadUrl
+            inProgress.value = false
+        }
+            .addOnFailureListener {
+                handleException(it)
+            }
+
+    }
 
 
 
