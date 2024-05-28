@@ -1,7 +1,9 @@
 package com.kvsAdmin.adminkaverischool.ui
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
@@ -11,7 +13,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.kvsAdmin.adminkaverischool.Constants.ADMINS
 import com.kvsAdmin.adminkaverischool.Constants.ANNOUNCEMET
+import com.kvsAdmin.adminkaverischool.Constants.POSTS
 import com.kvsAdmin.adminkaverischool.data.Announcement
+import com.kvsAdmin.adminkaverischool.data.Post
 import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
 import com.kvsAdmin.adminkaverischool.states.errorMsg
 import com.kvsAdmin.adminkaverischool.states.inProgress
@@ -26,6 +30,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Calendar
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -80,8 +85,7 @@ class adminKvsViewModel @Inject constructor(
                             }
 
                         }
-                }
-                else{
+                } else {
                     errorMsg.value = "Invalid User"
                     onError.value = true
                 }
@@ -143,11 +147,37 @@ class adminKvsViewModel @Inject constructor(
             .set(item)
     }
 
+    fun uploadImages(
+        selectedImage: MutableList<Uri?>,
+        shortDisc: String,
+        longDisc: String
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        val uid = UUID.randomUUID().toString()
+        inProgress.value = true
+
+        val post = Post(
+            title = shortDisc,
+            disc = longDisc,
+            imageList = selectedImage,
+            uid = uid
+        )
+        db.collection(POSTS).document(uid).set(post)
+        inProgress.value = false
+    }
+
+
+
+
+
+
+
+
+
 }
 
 @Composable
 fun CompError(modifier: Modifier = Modifier) {
-    if (onError.value){
+    if (onError.value) {
         OnErrorMessage()
     }
 }
