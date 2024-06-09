@@ -39,9 +39,11 @@ import androidx.navigation.NavController
 import com.kvsAdmin.adminkaverischool.R
 import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
 import com.kvsAdmin.adminkaverischool.states.inProgress
+import com.kvsAdmin.adminkaverischool.states.onError
 import com.kvsAdmin.adminkaverischool.ui.adminKvsViewModel
 import com.kvsAdmin.adminkaverischool.ui.theme.hex
 import com.kvsAdmin.util.CommonProgressBar
+import com.kvsAdmin.util.OnErrorMessage
 import com.kvsAdmin.util.navigateTo
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -167,6 +169,9 @@ fun LoginScreen(
                         .padding(8.dp)
                 ) {
                     Text(text = "Login")
+                }
+                if (onError.value){
+                    OnErrorMessage()
                 }
 
             }

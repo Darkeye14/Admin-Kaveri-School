@@ -45,8 +45,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kvsAdmin.adminkaverischool.R
+import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
 import com.kvsAdmin.adminkaverischool.ui.adminKvsViewModel
 import com.kvsAdmin.adminkaverischool.ui.theme.hex
+import com.kvsAdmin.util.ProfileImage
+import com.kvsAdmin.util.navigateTo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,7 +88,7 @@ fun EventPostsScreen(
                 .fillMaxSize(),
         ) {
 
-            var imageState = remember {
+            val imageState = remember {
                 mutableStateOf(false)
             }
             val titleState = remember {
@@ -94,8 +97,8 @@ fun EventPostsScreen(
             val descriptionState = remember {
                 mutableStateOf("")
             }
-            var uriState = remember {
-                mutableListOf<Uri?>()
+            val uriState = remember {
+                mutableStateOf<List<Uri?>>(listOf())
             }
             Image(
                 alpha = 0.40f,
@@ -139,7 +142,7 @@ fun EventPostsScreen(
                             },
                             label = {
                                 Text(
-                                    text = "Short Description",
+                                    text = "Title",
                                     modifier = Modifier
                                         .padding(8.dp)
                                 )
@@ -179,12 +182,13 @@ fun EventPostsScreen(
                             Text(text = "Upload Images")
                         }
                         if (imageState.value){
-                                   uriState = ProfileImage()
+                                   uriState.value = ProfileImage()
                         }
                         Spacer(modifier = Modifier.padding(8.dp))
                         Button(
                             onClick = {
-                                viewModel.onPost(uriState,titleState.value,descriptionState.value)
+                                viewModel.onPost(uriState.value,titleState.value,descriptionState.value)
+                                navigateTo(navController,DestinationScreen.HomeScreen.route)
                             }
                         ) {
                             Text(text = "Create Post")
@@ -195,27 +199,5 @@ fun EventPostsScreen(
             }
         }
     }
-}
-
-@Composable
-fun ProfileImage() : MutableList<Uri?> {
-
-    var uriState by remember { mutableStateOf(listOf<Uri>()) }
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents()
-    ) {
-        uriState = it
-    }
-    Button(
-        onClick = { launcher.launch("image/jpeg") },
-    ) {
-        Text(text = "Choose Photos", color = Color.White, style = MaterialTheme.typography.bodySmall)
-    }
-    Spacer(modifier = Modifier.padding(8.dp))
-    return uriState.toMutableStateList()
-}
-@Composable
-fun OnLauncher(OnImageClick: () -> Unit){
-
 }
 

@@ -11,11 +11,25 @@ data class Announcement(
     val classroom : String ?="",
     val section : String?="",
     val text : String?="",
-    val time : String?="",
+    val sortTime : String?="",
+    val timeStamp :String?="",
 )
-data class Post(
+data class AllPicsUploadList(
+    val uid: String?= ""
+)
+data class addingPost(
     val title :String? = "",
     val disc :String ? = "",
-    val imageList : List<Uri?>,
-    val uid :String?= ""
+    val imageList : List<Uri?> ?= listOf(),
+    val uid :String?= "",
+    val sortTime : String?="",
+    val timeStamp :String?="",
+)
+data class recievingPost(
+    val title :String? = "",
+    val disc :String ? = "",
+    val imageList : List<String?> ?= listOf(),
+    val uid :String?= "",
+    val sortTime : String?="",
+    val timeStamp :String?="",
 )
