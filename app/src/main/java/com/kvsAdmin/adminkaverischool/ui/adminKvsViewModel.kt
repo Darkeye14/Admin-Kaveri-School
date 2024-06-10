@@ -3,7 +3,9 @@ package com.kvsAdmin.adminkaverischool.ui
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
@@ -167,23 +169,14 @@ class adminKvsViewModel @Inject constructor(
         val sortTime = Calendar.getInstance().time.time.toString()
         val time = Calendar.getInstance().time.toString()
         inProgress.value = true
-
-        val post = addingPost(
-            title = shortDisc,
-            disc = longDisc,
-            imageList = selectedImage,
-            uid = uid,
-            sortTime = sortTime,
-            timeStamp = time
-        )
-        db.collection(POSTS).document(uid).set(post)
-            .await()
+        val uidList = mutableStateListOf<String>()
 
         if (selectedImage.isNotEmpty()) {
             selectedImage.forEach {
-
+                val uidSingle = UUID.randomUUID().toString()
+                uidList.add(uidSingle)
                 val storageRef = storage.reference
-                val imageRef = storageRef.child("images/$uid/$it")
+                val imageRef = storageRef.child("PostImages/$uidSingle")
                 val uploadTask = it.let { it1 ->
                     imageRef
                         .putFile(it1!!)
@@ -192,12 +185,26 @@ class adminKvsViewModel @Inject constructor(
                     it.metadata
                         ?.reference
                         ?.downloadUrl
+
                     inProgress.value = false
                 }
                     .addOnFailureListener {
                         handleException(it)
                     }
+                    .await()
             }
+
+            val post = addingPost(
+                title = shortDisc,
+                disc = longDisc,
+                imageUidList = uidList,
+                uid = uid,
+                sortTime = sortTime,
+                timeStamp = time
+            )
+            db.collection(POSTS).document(uid).set(post)
+                .await()
+
         }
         inProgress.value = false
     }
@@ -235,7 +242,6 @@ init {
 }
 
     fun downloadMultipleImages(
-        uri: String?,
         uid : String,
     ) = CoroutineScope(Dispatchers.IO).launch {
         val imageUri = mutableStateOf<Bitmap?>(null)
@@ -244,7 +250,7 @@ init {
         try {
             val maxDownloadSize = 5L * 1024 * 1024
             val storageRef = FirebaseStorage.getInstance().reference
-            val bytes = storageRef.child("images/$uid/$uri")
+            val bytes = storageRef.child("PostImages/$uid")
                 .getBytes(maxDownloadSize)
                 .await()
             imageUri.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)

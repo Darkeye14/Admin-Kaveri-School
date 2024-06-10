@@ -20,7 +20,7 @@ data class AllPicsUploadList(
 data class addingPost(
     val title :String? = "",
     val disc :String ? = "",
-    val imageList : List<Uri?> ?= listOf(),
+    val imageUidList : List<String?> ?= listOf(),
     val uid :String?= "",
     val sortTime : String?="",
     val timeStamp :String?="",
@@ -28,7 +28,7 @@ data class addingPost(
 data class recievingPost(
     val title :String? = "",
     val disc :String ? = "",
-    val imageList : List<String?> ?= listOf(),
+    val imageUidList : List<String?> ?= listOf(),
     val uid :String?= "",
     val sortTime : String?="",
     val timeStamp :String?="",
