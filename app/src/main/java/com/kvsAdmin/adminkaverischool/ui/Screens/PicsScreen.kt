@@ -1,12 +1,11 @@
 package com.kvsAdmin.adminkaverischool.ui.Screens
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,10 +20,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -37,21 +34,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kvsAdmin.adminkaverischool.R
+import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
 import com.kvsAdmin.adminkaverischool.ui.adminKvsViewModel
 import com.kvsAdmin.adminkaverischool.ui.theme.hex
-import com.kvsAdmin.util.TextCard
+import com.kvsAdmin.util.ProfileImage
+import com.kvsAdmin.util.navigateTo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostsScreen(
+fun PicsScreen(
     navController: NavController,
-    viewModel: adminKvsViewModel,
-    modifier: Modifier = Modifier
+    viewModel: adminKvsViewModel
 ) {
     Scaffold(
         topBar = {
@@ -75,6 +72,12 @@ fun PostsScreen(
 
         }
     ) {
+        val uriState = remember {
+            mutableStateOf<List<Uri?>>(listOf())
+        }
+        val imageState = remember {
+            mutableStateOf(false)
+        }
         Box(
             modifier = Modifier
                 .background(Color.White)
@@ -82,9 +85,6 @@ fun PostsScreen(
                 .fillMaxHeight()
                 .fillMaxSize(),
         ) {
-            val descriptionState = remember {
-                mutableStateOf("")
-            }
             Image(
                 alpha = 0.40f,
                 painter = painterResource(id = R.drawable.whatsapp_kaveri),
@@ -94,64 +94,51 @@ fun PostsScreen(
                     .fillMaxSize()
             )
 
-            Card(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
-                shape = CardDefaults.outlinedShape,
-                colors = CardDefaults.cardColors(hex),
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Top
+                Card (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(16.dp),
+                    shape = CardDefaults.outlinedShape,
+                    colors = CardDefaults.cardColors(hex)
                 ) {
-                    Text(
-                        modifier = Modifier.padding(8.dp),
-                        textAlign = TextAlign.Center,
-                        text = "Create A Post",
-                        color = Color.White,
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Spacer(modifier = modifier.padding(16.dp))
-
-                    Button(
-                        onClick = {
-
-                        }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Text(text = "Upload Images")
+                        Spacer(modifier = Modifier.padding(8.dp))
+
+                        Button(
+                            onClick = {
+                                imageState.value = true
+                            }
+                        ) {
+                            Text(text = "Select Pics")
+                        }
+                        if (imageState.value) {
+                            uriState.value = ProfileImage()
+                        }
+                        Spacer(modifier = Modifier.padding(8.dp))
+
+                        Button(onClick = {
+                            viewModel.uploadAllImage(uriState.value)
+                            navigateTo(navController, DestinationScreen.HomeScreen.route)
+                        }) {
+                            Text(text = "Post")
+                        }
+                        Spacer(modifier = Modifier.padding(8.dp))
                     }
-
-                    OutlinedTextField(
-                        value = descriptionState.value,
-                        onValueChange = {
-                            descriptionState.value = it
-                        },
-                        label = {
-                            Text(
-                                text = "Description",
-                                modifier = Modifier
-                                    .padding(8.dp)
-                            )
-                        },
-                        placeholder = {
-                            Text(
-                                text = "Add all other information",
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .padding(8.dp)
-                            )
-                        },
-                        colors = TextFieldDefaults.colors(MaterialTheme.colorScheme.primary)
-                    )
-
                 }
-
             }
         }
     }
 }
-
