@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
@@ -24,6 +25,7 @@ import com.kvsAdmin.adminkaverischool.data.Announcement
 import com.kvsAdmin.adminkaverischool.data.addingPost
 import com.kvsAdmin.adminkaverischool.data.recievingPost
 import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
+import com.kvsAdmin.adminkaverischool.states.announcementsDataList
 import com.kvsAdmin.adminkaverischool.states.errorMsg
 import com.kvsAdmin.adminkaverischool.states.imageUriList
 import com.kvsAdmin.adminkaverischool.states.inProgress
@@ -144,13 +146,14 @@ class adminKvsViewModel @Inject constructor(
     ) = CoroutineScope(Dispatchers.IO).launch {
         val sortTime = Calendar.getInstance().time.time.toString()
         val time = Calendar.getInstance().time.toString()
-
+        val uid = UUID.randomUUID().toString()
         val item = Announcement(
             classroom = classroom,
             section = section,
             sortTime = sortTime,
             text = text,
-            timeStamp = time
+            timeStamp = time,
+            uid = uid
         )
 
         db.collection(ANNOUNCEMET)
@@ -280,6 +283,83 @@ init {
                 errorMsg.value = "Invalid User"
                 onError.value = true
             }
+    }
+    fun populateAnnouncement(
+        classNo : String,
+        section : String = "A"
+    )= CoroutineScope(Dispatchers.IO).launch  {
+        if (classNo.isNotEmpty() && section.isNotEmpty()) {
+            inProgress.value = true
+            db.collection(ANNOUNCEMET).document(classNo)
+                .collection(section)
+                .orderBy("sortTime", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener { value ->
+                    if (value != null) {
+                        announcementsDataList.value = value.documents.mapNotNull {
+                            it.toObject<Announcement>()
+                        }
+                        inProgress.value = false
+                    }
+                }
+                .addOnFailureListener {
+                    errorMsg.value = "Invalid User"
+                    onError.value = true
+                }
+        }
+        else{
+            handleException(customMessage = "class number not selected")
+        }
+    }
+    fun onDeletePost(
+        postId : String
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        delay(1000)
+        inProgress.value = true
+        val post = db.collection(POSTS)
+            .whereEqualTo("uid", postId)
+            .get()
+            .await()
+        if (post.documents.isNotEmpty()){
+            for (document in post) {
+                try {
+                    document.reference.delete().await()
+                } catch (e: FirebaseFirestoreException) {
+                    handleException(e)
+                } catch (e: Exception) {
+                    handleException(e)
+                }
+            }
+
+        }
+        inProgress.value = false
+    }
+    fun onDeleteAnnouncement(
+        postId : String,
+        classNo :String,
+        section :String = "A"
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        inProgress.value = true
+
+
+        val post = db.collection(ANNOUNCEMET)
+            .document(classNo)
+            .collection(section)
+            .whereEqualTo("uid", postId)
+            .get()
+            .await()
+        if (post.documents.isNotEmpty()){
+            for (document in post) {
+                try {
+                    document.reference.delete().await()
+                } catch (e: FirebaseFirestoreException) {
+                    handleException(e)
+                } catch (e: Exception) {
+                    handleException(e)
+                }
+            }
+        }
+        inProgress.value = false
     }
 }
 

@@ -40,8 +40,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.kvsAdmin.adminkaverischool.data.Announcement
 import com.kvsAdmin.adminkaverischool.data.recievingPost
+import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
 import com.kvsAdmin.adminkaverischool.states.errorMsg
+import com.kvsAdmin.adminkaverischool.ui.Screens.DeleteAnnouncementButton
+import com.kvsAdmin.adminkaverischool.ui.Screens.DeletePostButton
+import com.kvsAdmin.adminkaverischool.ui.adminKvsViewModel
 import com.kvsAdmin.adminkaverischool.ui.theme.hex
 
 fun navigateTo(
@@ -106,6 +111,80 @@ fun TextCard(
                 fontFamily = FontFamily.Cursive,
                 fontWeight = fontWeight,
             )
+        }
+    }
+}
+
+@Composable
+fun AnnouncementsCard(
+    post: Announcement,
+    viewModel: adminKvsViewModel,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(12.dp),
+        colors = CardDefaults.cardColors(hex)
+    ) {
+        Column(
+            modifier = modifier
+                .fillMaxSize(),
+        ) {
+
+            Text(
+                text = "     Attention!!",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                maxLines = 1,
+                color = Color.White,
+                modifier = Modifier
+                    .padding(12.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = post.text ?: "Empty",
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier
+                        .padding(12.dp)
+                )
+
+                Spacer(modifier = Modifier.padding(10.dp))
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                DeleteAnnouncementButton {
+                    viewModel.onDeleteAnnouncement(post.uid!!,post.classroom!!)
+                    navigateTo(navController,DestinationScreen.HomeScreen.route)
+                }
+
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = post.timeStamp ?: "recently",
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier
+                        .padding(12.dp)
+                )
+
+                Spacer(modifier = Modifier.padding(10.dp))
+            }
+
         }
     }
 }

@@ -13,6 +13,7 @@ data class Announcement(
     val text : String?="",
     val sortTime : String?="",
     val timeStamp :String?="",
+    val uid : String ?= ""
 )
 data class AllPicsUploadList(
     val uid: String?= ""

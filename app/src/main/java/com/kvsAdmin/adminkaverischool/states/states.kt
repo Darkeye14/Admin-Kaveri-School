@@ -3,6 +3,7 @@ package com.kvsAdmin.adminkaverischool.states
 import android.graphics.Bitmap
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import com.kvsAdmin.adminkaverischool.data.Announcement
 import com.kvsAdmin.adminkaverischool.data.recievingPost
 
 var inProgress = mutableStateOf( false)
@@ -12,3 +13,4 @@ var signIn = mutableStateOf(false)
 var imageUriList = mutableStateListOf<Bitmap?>(null)
 var singleImageUri = mutableStateOf<Bitmap?>(null)
 var postsDataList = mutableStateOf<List<recievingPost>>(listOf())
+var announcementsDataList = mutableStateOf<List<Announcement>>(listOf())

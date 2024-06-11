@@ -99,20 +99,6 @@ fun SinglePostScreen(
                 modifier = Modifier
                     .fillMaxSize()
             )
-
-//            LazyVerticalGrid(columns = GridCells.Fixed(1)) {
-//
-//                items(imageUriList) {
-//                    AsyncImage(
-//                        model = it,
-//                        contentDescription = null,
-//                        Modifier.wrapContentSize(),
-//                        contentScale = ContentScale.FillWidth
-//                    )
-//                }
-//
-//            }
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -121,20 +107,21 @@ fun SinglePostScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
-//                item {
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(12.dp),
-//                        horizontalArrangement = Arrangement.SpaceBetween
-//                    ) {
-//                        DeletePostButton {
-//                            viewModel.onDeletePost(postId)
-//                            navigateTo(navController, DestinationScreen.HomeScreen.route)
-//                        }
-//
-//                    }
-//                }
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        DeletePostButton {
+                            viewModel.onDeletePost(postId)
+                            navigateTo(navController, DestinationScreen.HomeScreen.route)
+                        }
+
+                    }
+                }
+
                 items(imageUriList){
                     AsyncImage(
                         model = it,
@@ -148,37 +135,6 @@ fun SinglePostScreen(
                 }
             }
 
-//            Card(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(it),
-//                shape = CardDefaults.outlinedShape,
-//                colors = CardDefaults.cardColors(hex)
-//            ) {
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .padding(it)
-//                        .verticalScroll(rememberScrollState())
-//                ) {
-//
-//                    Text(
-//                        text = currentPost.title ?: "POST",
-//                        color = Color.White,
-//                        fontWeight = FontWeight.SemiBold,
-//                        fontSize = 24.sp
-//                        )
-//
-//
-//                    Text(
-//                        text = currentPost.disc ?:"",
-//                        color = Color.White,
-//                        fontWeight = FontWeight.SemiBold,
-//                        fontSize = 24.sp
-//                    )
-//
-//                }
-//            }
         }
     }
 }
@@ -188,7 +144,7 @@ fun DeletePostButton(onClick: () -> Unit) {
     ExtendedFloatingActionButton(
         onClick = { onClick() },
         icon = { Icon(Icons.Default.Delete, "Extended floating action button.") },
-        text = { Text(text = "Delete") },
-        containerColor = MaterialTheme.colorScheme.primary
+        text = { Text(text = "Delete Post") },
+        containerColor = hex
     )
 }

@@ -118,7 +118,7 @@ fun HomeScreen(
                 Row(modifier = Modifier.padding(8.dp)) {
                     HomeScreenCard(Modifier.weight(1f), text = "Manage Announcements") {
 //                        viewModel.getMyProfilesData()
-//                        navigateTo(navController, DestinationScreen.MyProfilesScreen.route)
+                        navigateTo(navController, DestinationScreen.ManageAnnouncementsScreen.route)
                     }
 
                     HomeScreenCard(Modifier.weight(1f), text = "Inquiries") {
