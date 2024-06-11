@@ -1,19 +1,16 @@
 package com.kvsAdmin.adminkaverischool.ui.Screens
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -34,10 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.kvsAdmin.adminkaverischool.R
 import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
-import com.kvsAdmin.adminkaverischool.states.allImageUriList
 import com.kvsAdmin.adminkaverischool.states.profilesPics
 import com.kvsAdmin.adminkaverischool.ui.adminKvsViewModel
 import com.kvsAdmin.adminkaverischool.ui.theme.hex
@@ -46,9 +41,11 @@ import com.kvsAdmin.util.navigateTo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ViewAllPicsScreen(
-    navController: NavController,
-    viewModel: adminKvsViewModel
+fun DeletePicsScreen(
+    type: String,
+    uid: String?,
+    viewModel: adminKvsViewModel,
+    navController: NavController
 ) {
 
     Scaffold(
@@ -92,54 +89,44 @@ fun ViewAllPicsScreen(
                 modifier = Modifier
                     .fillMaxSize()
             )
-            if (allImageUriList.isEmpty()) {
-
-                Column(
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Card(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it)
-                        .background(color = Color.Transparent),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxWidth()
+                        .padding(15.dp),
+                    colors = CardDefaults.cardColors(hex)
                 ) {
-
-                    Card(
-                        colors = CardDefaults.cardColors(hex)
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-
+                        Spacer(modifier = Modifier.padding(12.dp))
                         Text(
-                            text = "No Photos Available",
-                            fontSize = 25.sp,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
-                }
-            } else {
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                        .padding(8.dp),
-                ) {
-                    items(allImageUriList) {
-                        if (it != null) {
-                            AsyncImage(
-                                model = it.bitmap,
-                                contentScale = ContentScale.Crop,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .clickable {
-                                        navigateTo(
-                                            navController = navController,
-                                            DestinationScreen.DeletePicsScreen.createRoute(uid = it.uid!!,type = "allPics")
-                                        )
-                                    }
+                            text = "Restart the app to see the changes once deleted",
+                            color = Color.White
                             )
+                        Button(
+                            onClick = {
+                                if (uid != null) {
+                                    viewModel.deletePhoto(uid, type)
+                                }
+                                navigateTo(navController,DestinationScreen.HomeScreen.route)
+                            }
+                        ) {
+                            Text(text = "Delete Pic")
                         }
+                        Spacer(modifier = Modifier.padding(12.dp))
+
                     }
                 }
             }
+
+
         }
     }
 }

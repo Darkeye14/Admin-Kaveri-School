@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kvsAdmin.adminkaverischool.ui.Screens.AnnounceScreen
+import com.kvsAdmin.adminkaverischool.ui.Screens.DeletePicsScreen
 import com.kvsAdmin.adminkaverischool.ui.Screens.EventPostsScreen
 import com.kvsAdmin.adminkaverischool.ui.Screens.HomeScreen
 import com.kvsAdmin.adminkaverischool.ui.Screens.LoginScreen
@@ -39,7 +40,7 @@ fun KvsNavigation(modifier: Modifier = Modifier) {
             HomeScreen(navController = navController, viewModel = viewModel)
         }
         composable(DestinationScreen.ManageAllPhotosScreen.route){
-            ViewAllPicsScreen(viewModel = viewModel)
+            ViewAllPicsScreen(navController = navController, viewModel = viewModel)
         }
         composable(DestinationScreen.AnnounceScreen.route){
             AnnounceScreen(navController = navController, viewModel = viewModel)
@@ -49,6 +50,12 @@ fun KvsNavigation(modifier: Modifier = Modifier) {
         }
         composable(DestinationScreen.ManagePostsScreen.route){
             ManagePostsScreen(navController = navController, viewModel = viewModel)
+        }
+        composable(DestinationScreen.DeletePicsScreen.route){
+            val uid = it.arguments?.getString("uid")
+            val type = it.arguments?.getString("type")
+
+            DeletePicsScreen(type = type!!, uid = uid, viewModel =viewModel, navController = navController )
         }
         composable(DestinationScreen.SinglePostScreen.route){
             val postId = it.arguments?.getString("postId")

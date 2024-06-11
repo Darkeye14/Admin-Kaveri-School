@@ -2,6 +2,7 @@ package com.kvsAdmin.adminkaverischool.ui.Screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -129,7 +130,13 @@ fun SinglePostScreen(
                         Modifier
                             .wrapContentSize()
                             .size(250.dp)
-                            .padding(8.dp),
+                            .padding(8.dp)
+                            .clickable {
+                                navigateTo(
+                                    navController = navController,
+                                    DestinationScreen.DeletePicsScreen.createRoute(uid = it,type = "postPics")
+                                )
+                            },
                         contentScale = ContentScale.FillBounds
                     )
                 }

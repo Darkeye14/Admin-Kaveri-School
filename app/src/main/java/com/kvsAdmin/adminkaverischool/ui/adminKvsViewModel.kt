@@ -16,12 +16,14 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageException
 import com.kvsAdmin.adminkaverischool.Constants.ADMINS
 import com.kvsAdmin.adminkaverischool.Constants.ALLPICS
 import com.kvsAdmin.adminkaverischool.Constants.ANNOUNCEMET
 import com.kvsAdmin.adminkaverischool.Constants.POSTS
 import com.kvsAdmin.adminkaverischool.data.AllPicsUploadList
 import com.kvsAdmin.adminkaverischool.data.Announcement
+import com.kvsAdmin.adminkaverischool.data.ImgData
 import com.kvsAdmin.adminkaverischool.data.PicUid
 import com.kvsAdmin.adminkaverischool.data.addingPost
 import com.kvsAdmin.adminkaverischool.data.recievingPost
@@ -242,12 +244,12 @@ class adminKvsViewModel @Inject constructor(
         }
     }
 
-init {
-    populatePost()
-}
+    init {
+        populatePost()
+    }
 
     fun downloadMultipleImages(
-        uid : String,
+        uid: String,
     ) = CoroutineScope(Dispatchers.IO).launch {
         val imageUri = mutableStateOf<Bitmap?>(null)
 
@@ -259,21 +261,26 @@ init {
                 .getBytes(maxDownloadSize)
                 .await()
             imageUri.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-
             imageUriList.add(imageUri.value)
 
 
-        } catch (e: Exception) {
+        } catch (e : FirebaseFirestoreException){
+            handleException(e)
+        }
+        catch (e : StorageException){
+            handleException(e)
+        }
+        catch (e: Exception) {
             handleException(e)
         }
         inProgress.value = false
     }
 
-    fun populatePost()= CoroutineScope(Dispatchers.IO).launch  {
+    fun populatePost() = CoroutineScope(Dispatchers.IO).launch {
         inProgress.value = true
         db.collection(POSTS).orderBy("sortTime", Query.Direction.DESCENDING)
             .get()
-            .addOnSuccessListener { value->
+            .addOnSuccessListener { value ->
                 if (value != null) {
                     postsDataList.value = value.documents.mapNotNull {
                         it.toObject<recievingPost>()
@@ -281,15 +288,16 @@ init {
                     inProgress.value = false
                 }
             }
-            .addOnFailureListener{
+            .addOnFailureListener {
                 errorMsg.value = "Invalid User"
                 onError.value = true
             }
     }
+
     fun populateAnnouncement(
-        classNo : String,
-        section : String = "A"
-    )= CoroutineScope(Dispatchers.IO).launch  {
+        classNo: String,
+        section: String = "A"
+    ) = CoroutineScope(Dispatchers.IO).launch {
         if (classNo.isNotEmpty() && section.isNotEmpty()) {
             inProgress.value = true
             db.collection(ANNOUNCEMET).document(classNo)
@@ -308,13 +316,13 @@ init {
                     errorMsg.value = "Invalid User"
                     onError.value = true
                 }
-        }
-        else{
+        } else {
             handleException(customMessage = "class number not selected")
         }
     }
+
     fun onDeletePost(
-        postId : String
+        postId: String
     ) = CoroutineScope(Dispatchers.IO).launch {
         delay(1000)
         inProgress.value = true
@@ -322,7 +330,7 @@ init {
             .whereEqualTo("uid", postId)
             .get()
             .await()
-        if (post.documents.isNotEmpty()){
+        if (post.documents.isNotEmpty()) {
             for (document in post) {
                 try {
                     document.reference.delete().await()
@@ -336,10 +344,41 @@ init {
         }
         inProgress.value = false
     }
+
+    fun deletePhoto(
+        postId: String,
+        type: String
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        delay(500)
+        inProgress.value = true
+        if (type == "allPics") {
+            db.collection(ALLPICS)
+                .document(postId)
+                .delete()
+
+            val storageRef = storage.reference
+            val desertRef = storageRef.child("AllImages/$postId")
+            desertRef.delete()
+                .addOnFailureListener {
+                    handleException(it)
+                }
+        }
+        else if(type == "postPics"){
+            val storageRef = storage.reference
+            val desertRef = storageRef.child("AllImages/$postId")
+            desertRef.delete()
+                .addOnFailureListener {
+                    handleException(it)
+                }
+        }
+
+        inProgress.value = false
+    }
+
     fun onDeleteAnnouncement(
-        postId : String,
-        classNo :String,
-        section :String = "A"
+        postId: String,
+        classNo: String,
+        section: String = "A"
     ) = CoroutineScope(Dispatchers.IO).launch {
         inProgress.value = true
 
@@ -350,7 +389,7 @@ init {
             .whereEqualTo("uid", postId)
             .get()
             .await()
-        if (post.documents.isNotEmpty()){
+        if (post.documents.isNotEmpty()) {
             for (document in post) {
                 try {
                     document.reference.delete().await()
@@ -365,21 +404,22 @@ init {
     }
 
 
-    fun onShowAllPics() =CoroutineScope(Dispatchers.IO).launch{
+    fun onShowAllPics() = CoroutineScope(Dispatchers.IO).launch {
         inProgress.value = true
 
-        val snapShot =  db.collection(ALLPICS)
+        val snapShot = db.collection(ALLPICS)
             .get()
             .await()
 
-        for(doc in snapShot.documents){
+        for (doc in snapShot.documents) {
             val post = doc.toObject<PicUid>()
             downloadAllImages(post!!.uid)
 
         }
         inProgress.value = false
     }
-    fun downloadAllImages(uid : String?) = CoroutineScope(Dispatchers.IO).launch {
+
+    fun downloadAllImages(uid: String?) = CoroutineScope(Dispatchers.IO).launch {
         val imageUri = mutableStateOf<Bitmap?>(null)
         inProgress.value = true
 
@@ -391,7 +431,11 @@ init {
                 .getBytes(maxDownloadSize)
                 .await()
             imageUri.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            allImageUriList.add(imageUri.value)
+            val data = ImgData(
+                uid = uid,
+                bitmap = imageUri.value
+            )
+            allImageUriList.add(data)
 
 
         } catch (e: Exception) {
@@ -399,7 +443,6 @@ init {
         }
         inProgress.value = false
     }
-
 
 
 }
