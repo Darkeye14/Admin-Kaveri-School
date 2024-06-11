@@ -125,7 +125,7 @@ fun SinglePostScreen(
 
                 items(imageUriList){
                     AsyncImage(
-                        model = it,
+                        model = it!!.bitmap,
                         contentDescription = null,
                         Modifier
                             .wrapContentSize()
@@ -134,7 +134,7 @@ fun SinglePostScreen(
                             .clickable {
                                 navigateTo(
                                     navController = navController,
-                                    DestinationScreen.DeletePicsScreen.createRoute(uid = it,type = "postPics")
+                                    DestinationScreen.DeletePicsScreen.createRoute(uid = it.uid!!,type = "postPics")
                                 )
                             },
                         contentScale = ContentScale.FillBounds

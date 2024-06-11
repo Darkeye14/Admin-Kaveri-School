@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -125,6 +127,36 @@ fun HomeScreen(
 
                                          navigateTo(navController, DestinationScreen.ManageAllPhotosScreen.route)
                     }
+                }
+                Card(
+                    modifier = Modifier
+                        .height(130.dp)
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .clickable {
+                            navigateTo(navController, DestinationScreen.CreateAccScreen.route)
+                        },
+                    colors = CardDefaults.cardColors(hex)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(8.dp),
+                            textAlign = TextAlign.Center,
+                            text = "Create Student Account",
+                            maxLines = 2,
+                            fontSize = 25.sp,
+                            fontFamily = FontFamily.SansSerif,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.padding(8.dp))
+                    }
+                    Spacer(modifier = Modifier.padding(16.dp))
+
                 }
 
             }

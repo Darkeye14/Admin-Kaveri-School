@@ -14,6 +14,7 @@ import com.kvsAdmin.adminkaverischool.ui.Screens.LoginScreen
 import com.kvsAdmin.adminkaverischool.ui.Screens.ManageAnnouncementScreen
 import com.kvsAdmin.adminkaverischool.ui.Screens.ManagePostsScreen
 import com.kvsAdmin.adminkaverischool.ui.Screens.PicsScreen
+import com.kvsAdmin.adminkaverischool.ui.Screens.SignUpScreen
 import com.kvsAdmin.adminkaverischool.ui.Screens.SinglePostScreen
 import com.kvsAdmin.adminkaverischool.ui.Screens.ViewAllPicsScreen
 import com.kvsAdmin.adminkaverischool.ui.adminKvsViewModel
@@ -25,10 +26,13 @@ fun KvsNavigation(modifier: Modifier = Modifier) {
 
     NavHost(
         navController = navController,
-        startDestination = DestinationScreen.HomeScreen.route
+        startDestination = DestinationScreen.LoginScreen.route
     ){
         composable(DestinationScreen.LoginScreen.route){
             LoginScreen(navController = navController, viewModel = viewModel)
+        }
+        composable(DestinationScreen.CreateAccScreen.route){
+            SignUpScreen(navController = navController, viewModel = viewModel)
         }
         composable(DestinationScreen.ManageAnnouncementsScreen.route){
             ManageAnnouncementScreen(navController = navController, viewModel = viewModel)

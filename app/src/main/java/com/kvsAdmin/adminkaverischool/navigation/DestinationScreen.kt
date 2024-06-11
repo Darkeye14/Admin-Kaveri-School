@@ -3,6 +3,7 @@ package com.kvsAdmin.adminkaverischool.navigation
 sealed class DestinationScreen(var route : String) {
 
     data object LoginScreen :DestinationScreen("loginScreen")
+    data object CreateAccScreen :DestinationScreen("CreateAccScreen")
     data object ManageAnnouncementsScreen :DestinationScreen("manageAnnounceScreen")
     data object ManageAllPhotosScreen :DestinationScreen("manageAllPicsScreen")
     data object HomeScreen :DestinationScreen("homeScreen")

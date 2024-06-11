@@ -1,5 +1,6 @@
 package com.kvsAdmin.adminkaverischool.ui
 
+
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -21,6 +22,7 @@ import com.kvsAdmin.adminkaverischool.Constants.ADMINS
 import com.kvsAdmin.adminkaverischool.Constants.ALLPICS
 import com.kvsAdmin.adminkaverischool.Constants.ANNOUNCEMET
 import com.kvsAdmin.adminkaverischool.Constants.POSTS
+import com.kvsAdmin.adminkaverischool.Constants.STUDENTS
 import com.kvsAdmin.adminkaverischool.data.AllPicsUploadList
 import com.kvsAdmin.adminkaverischool.data.Announcement
 import com.kvsAdmin.adminkaverischool.data.ImgData
@@ -53,6 +55,61 @@ class adminKvsViewModel @Inject constructor(
     private val db: FirebaseFirestore,
     private val storage: FirebaseStorage
 ) : ViewModel() {
+
+    fun signUp1(
+        studentName: String,
+        parentsName: String,
+        parentsNumber: String,
+        standard : String,
+        email: String,
+        password: String,
+        section: String,
+        navController: NavController
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        inProgress.value = true
+
+        auth.createUserWithEmailAndPassword(email, password)
+
+            .addOnFailureListener {
+                handleException(it)
+            }
+            .addOnCompleteListener {
+
+                if (it.isSuccessful) {
+                    createAccount(standard,studentName,parentsName,parentsNumber, email, password,section)
+                    inProgress.value = false
+                    navigateTo(navController, DestinationScreen.HomeScreen.route)
+                } else {
+                    handleException(customMessage = " SignUp error")
+                }
+            }
+    }
+    private fun createAccount(
+        standard :String,
+        studentName: String,
+        parentsName: String,
+        parentsNumber: String,
+        email: String,
+        password: String,
+        section: String,
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        delay(1000)
+        val acc = com.kvsAdmin.adminkaverischool.data.Account(
+            studentName = studentName,
+            parentsName = parentsName,
+            parentsNumber = parentsNumber,
+            emailId = email,
+            password = password,
+            section = section,
+            standard = standard,
+            authId = auth.currentUser?.uid
+        )
+        db.collection(STUDENTS)
+            .document()
+            .set(acc)
+
+    }
+
 
     fun login(
         email: String,
@@ -261,7 +318,11 @@ class adminKvsViewModel @Inject constructor(
                 .getBytes(maxDownloadSize)
                 .await()
             imageUri.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            imageUriList.add(imageUri.value)
+            val data = ImgData(
+                uid = uid,
+                bitmap = imageUri.value
+            )
+            imageUriList.add(data)
 
 
         } catch (e : FirebaseFirestoreException){
@@ -365,7 +426,7 @@ class adminKvsViewModel @Inject constructor(
         }
         else if(type == "postPics"){
             val storageRef = storage.reference
-            val desertRef = storageRef.child("AllImages/$postId")
+            val desertRef = storageRef.child("PostImages/$postId")
             desertRef.delete()
                 .addOnFailureListener {
                     handleException(it)
