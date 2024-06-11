@@ -22,9 +22,11 @@ import com.kvsAdmin.adminkaverischool.Constants.ANNOUNCEMET
 import com.kvsAdmin.adminkaverischool.Constants.POSTS
 import com.kvsAdmin.adminkaverischool.data.AllPicsUploadList
 import com.kvsAdmin.adminkaverischool.data.Announcement
+import com.kvsAdmin.adminkaverischool.data.PicUid
 import com.kvsAdmin.adminkaverischool.data.addingPost
 import com.kvsAdmin.adminkaverischool.data.recievingPost
 import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
+import com.kvsAdmin.adminkaverischool.states.allImageUriList
 import com.kvsAdmin.adminkaverischool.states.announcementsDataList
 import com.kvsAdmin.adminkaverischool.states.errorMsg
 import com.kvsAdmin.adminkaverischool.states.imageUriList
@@ -361,5 +363,45 @@ init {
         }
         inProgress.value = false
     }
+
+
+    fun onShowAllPics() =CoroutineScope(Dispatchers.IO).launch{
+        inProgress.value = true
+
+        val snapShot =  db.collection(ALLPICS)
+            .get()
+            .await()
+
+        for(doc in snapShot.documents){
+            val post = doc.toObject<PicUid>()
+            downloadAllImages(post!!.uid)
+
+        }
+        inProgress.value = false
+    }
+    fun downloadAllImages(uid : String?) = CoroutineScope(Dispatchers.IO).launch {
+        val imageUri = mutableStateOf<Bitmap?>(null)
+        inProgress.value = true
+
+        try {
+            val maxDownloadSize = 5L * 1024 * 1024
+            val storageRef = FirebaseStorage.getInstance().reference
+
+            val bytes = storageRef.child("AllImages/$uid")
+                .getBytes(maxDownloadSize)
+                .await()
+            imageUri.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            allImageUriList.add(imageUri.value)
+
+
+        } catch (e: Exception) {
+            handleException(e)
+        }
+        inProgress.value = false
+    }
+
+
+
 }
+
 

@@ -14,6 +14,7 @@ import com.kvsAdmin.adminkaverischool.ui.Screens.ManageAnnouncementScreen
 import com.kvsAdmin.adminkaverischool.ui.Screens.ManagePostsScreen
 import com.kvsAdmin.adminkaverischool.ui.Screens.PicsScreen
 import com.kvsAdmin.adminkaverischool.ui.Screens.SinglePostScreen
+import com.kvsAdmin.adminkaverischool.ui.Screens.ViewAllPicsScreen
 import com.kvsAdmin.adminkaverischool.ui.adminKvsViewModel
 
 @Composable
@@ -36,6 +37,9 @@ fun KvsNavigation(modifier: Modifier = Modifier) {
         }
         composable(DestinationScreen.HomeScreen.route){
             HomeScreen(navController = navController, viewModel = viewModel)
+        }
+        composable(DestinationScreen.ManageAllPhotosScreen.route){
+            ViewAllPicsScreen(viewModel = viewModel)
         }
         composable(DestinationScreen.AnnounceScreen.route){
             AnnounceScreen(navController = navController, viewModel = viewModel)

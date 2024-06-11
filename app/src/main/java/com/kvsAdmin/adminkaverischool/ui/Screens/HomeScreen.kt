@@ -121,9 +121,9 @@ fun HomeScreen(
                         navigateTo(navController, DestinationScreen.ManageAnnouncementsScreen.route)
                     }
 
-                    HomeScreenCard(Modifier.weight(1f), text = "Inquiries") {
+                    HomeScreenCard(Modifier.weight(1f), text = "Manage Photo Gallery") {
 
-                        //                 navigateTo(navController, DestinationScreen.SavedScreen.route)
+                                         navigateTo(navController, DestinationScreen.ManageAllPhotosScreen.route)
                     }
                 }
 

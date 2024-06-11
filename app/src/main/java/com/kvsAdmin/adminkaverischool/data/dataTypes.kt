@@ -6,7 +6,9 @@ data class ToggleableInfo(
     val isChecked: Boolean,
     val text : String
 )
-
+data class PicUid(
+    val uid : String ?= ""
+)
 data class Announcement(
     val classroom : String ?="",
     val section : String?="",
