@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -127,6 +128,7 @@ fun LoginScreen(
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Done
                     ),
+                    colors = TextFieldDefaults.colors(),
                     onValueChange = {
                         emailState.value = it
                     },
@@ -139,6 +141,7 @@ fun LoginScreen(
                     }
                 )
                 OutlinedTextField(
+                    colors = TextFieldDefaults.colors(),
                     value = passwordState.value,
                     singleLine = true,
                     keyboardOptions = KeyboardOptions.Default.copy(

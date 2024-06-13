@@ -124,6 +124,14 @@ fun ManageAnnouncementScreen(
                         .padding(it)
                         .background(color = Color.Transparent)
                 ) {
+                    item {
+                        if (classNo.value == "") {
+                            classNo.value = SelectClass()
+                        }
+                        if (classNo.value != ""){
+                            viewModel.populateAnnouncement(classNo.value)
+                        }
+                    }
                     items(announcements) { post ->
                         imageUriList.clear()
                         AnnouncementsCard(post = post, viewModel= viewModel, navController = navController)

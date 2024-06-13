@@ -2,27 +2,19 @@ package com.kvsAdmin.adminkaverischool.ui.Screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,21 +31,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.kvsAdmin.adminkaverischool.R
 import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
-import com.kvsAdmin.adminkaverischool.states.imageUriList
-import com.kvsAdmin.adminkaverischool.states.postsDataList
+import com.kvsAdmin.adminkaverischool.states.profilesPics
 import com.kvsAdmin.adminkaverischool.ui.adminKvsViewModel
 import com.kvsAdmin.adminkaverischool.ui.theme.hex
 import com.kvsAdmin.util.navigateTo
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SinglePostScreen(
-    postId: String,
-    navController: NavController,
-    viewModel: adminKvsViewModel
+fun DeletePicsScreen(
+    type: String,
+    uid: String?,
+    viewModel: adminKvsViewModel,
+    navController: NavController
 ) {
 
     Scaffold(
@@ -78,20 +70,17 @@ fun SinglePostScreen(
 
         }
     ) {
-        val currentPost = postsDataList.value.first { it.uid == postId }
-        imageUriList.clear()
-        currentPost.imageUidList?.forEach {
-            if (it != null) {
-                viewModel.downloadMultipleImages(it)
-            }
-        }
+        viewModel.onShowAllPics()
         Box(
             modifier = Modifier
-                .background(Color.White)
+                .background(Color.Transparent)
                 .padding(it)
                 .fillMaxHeight()
                 .fillMaxSize(),
         ) {
+            profilesPics.value.forEach {
+                Text(text = it.uid.toString())
+            }
             Image(
                 alpha = 0.40f,
                 painter = painterResource(id = R.drawable.whatsapp_kaveri),
@@ -100,58 +89,44 @@ fun SinglePostScreen(
                 modifier = Modifier
                     .fillMaxSize()
             )
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Transparent),
-                contentPadding = it,
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
-
             ) {
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        horizontalArrangement = Arrangement.End
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(15.dp),
+                    colors = CardDefaults.cardColors(hex)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        DeletePostButton {
-                            viewModel.onDeletePost(postId)
-                            navigateTo(navController, DestinationScreen.HomeScreen.route)
+                        Spacer(modifier = Modifier.padding(12.dp))
+                        Text(
+                            text = "Restart the app to see the changes once deleted",
+                            color = Color.White
+                            )
+                        Button(
+                            onClick = {
+                                if (uid != null) {
+                                    viewModel.deletePhoto(uid, type)
+                                }
+                                navigateTo(navController,DestinationScreen.HomeScreen.route)
+                            }
+                        ) {
+                            Text(text = "Delete Pic")
                         }
+                        Spacer(modifier = Modifier.padding(12.dp))
 
                     }
                 }
-
-                items(imageUriList){
-                    AsyncImage(
-                        model = it!!.bitmap,
-                        contentDescription = null,
-                        Modifier
-                            .wrapContentSize()
-                            .size(250.dp)
-                            .padding(8.dp)
-                            .clickable {
-                                navigateTo(
-                                    navController = navController,
-                                    DestinationScreen.DeletePicsScreen.createRoute(uid = it.uid!!,type = "postPics")
-                                )
-                            },
-                        contentScale = ContentScale.FillBounds
-                    )
-                }
             }
+
 
         }
     }
-}
-
-@Composable
-fun DeletePostButton(onClick: () -> Unit) {
-    ExtendedFloatingActionButton(
-        onClick = { onClick() },
-        icon = { Icon(Icons.Default.Delete, "Extended floating action button.") },
-        text = { Text(text = "Delete Post") },
-        containerColor = hex
-    )
 }
