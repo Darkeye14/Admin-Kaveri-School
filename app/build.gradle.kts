@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     id("com.google.devtools.ksp")
     id ("com.google.dagger.hilt.android")
+
 }
 
 android {
@@ -75,14 +76,15 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.51.1")
 
     implementation ("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
 
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     ksp ("com.google.dagger:hilt-compiler:2.51.1")
 
     // For instrumentation tests
-    androidTestImplementation  ("com.google.dagger:hilt-android-testing:2.51")
-    kspAndroidTest ("com.google.dagger:hilt-compiler:2.51")
+    androidTestImplementation  ("com.google.dagger:hilt-android-testing:2.51.1")
+    kspAndroidTest ("com.google.dagger:hilt-compiler:2.51.1")
 
     // For local unit tests
     testImplementation ("com.google.dagger:hilt-android-testing:2.51.1")

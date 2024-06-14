@@ -1,6 +1,5 @@
 package com.kvsAdmin.adminkaverischool.states
 
-import android.graphics.Bitmap
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.kvsAdmin.adminkaverischool.data.Announcement

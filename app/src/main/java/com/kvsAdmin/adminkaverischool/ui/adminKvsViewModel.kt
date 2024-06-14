@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
@@ -118,6 +117,7 @@ class adminKvsViewModel @Inject constructor(
 
     ) = CoroutineScope(Dispatchers.IO).launch {
         inProgress.value = true
+
         val admin = db.collection(ADMINS)
 
             .where(
@@ -163,6 +163,9 @@ class adminKvsViewModel @Inject constructor(
             } catch (e: FirebaseAuthException) {
                 handleException(e)
             }
+            catch (e: Exception){
+                handleException(e)
+            }
             inProgress.value = false
 
         }
@@ -198,6 +201,7 @@ class adminKvsViewModel @Inject constructor(
     ) = CoroutineScope(Dispatchers.Main).launch {
         delay(500)
         navigateTo(navController, DestinationScreen.HomeScreen.route)
+        populatePost()
     }
 
     fun announcement(
@@ -301,9 +305,9 @@ class adminKvsViewModel @Inject constructor(
         }
     }
 
-    init {
-        populatePost()
-    }
+//    init {
+//        populatePost()
+//    }
 
     fun downloadMultipleImages(
         uid: String,

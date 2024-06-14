@@ -1,7 +1,6 @@
 package com.kvsAdmin.adminkaverischool.data
 
 import android.graphics.Bitmap
-import android.net.Uri
 
 data class Account (
     val studentName : String,
