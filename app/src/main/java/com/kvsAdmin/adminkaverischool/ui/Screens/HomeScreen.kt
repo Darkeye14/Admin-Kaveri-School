@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -97,34 +99,64 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(modifier = Modifier.padding(8.dp)) {
-                    HomeScreenCard(Modifier.weight(1f), text = "Make An Announcement") {
+                    HomeScreenCard(Modifier.weight(1f), text = "Make An\nAnnouncement") {
                         navigateTo(navController, DestinationScreen.AnnounceScreen.route)
                     }
 
-                    HomeScreenCard(Modifier.weight(1f), text = "Manage Post") {
+                    HomeScreenCard(Modifier.weight(1f), text = "Manage\nPost") {
 
                                          navigateTo(navController, DestinationScreen.ManagePostsScreen.route)
                     }
                 }
                 Row(modifier = Modifier.padding(8.dp)) {
-                    HomeScreenCard(Modifier.weight(1f), text = "Add Posts") {
+                    HomeScreenCard(Modifier.weight(1f), text = "Add\nPosts") {
                         navigateTo(navController, DestinationScreen.EventPostsScreen.route)
                     }
 
-                    HomeScreenCard(Modifier.weight(1f), text = "Add Pics") {
+                    HomeScreenCard(Modifier.weight(1f), text = "Add\nPics") {
                         navigateTo(navController, DestinationScreen.AllImagesScreen.route)
                     }
                 }
                 Row(modifier = Modifier.padding(8.dp)) {
-                    HomeScreenCard(Modifier.weight(1f), text = "Manage Announcements") {
+                    HomeScreenCard(Modifier.weight(1f), text = "Manage\nAnnouncements") {
 //                        viewModel.getMyProfilesData()
                         navigateTo(navController, DestinationScreen.ManageAnnouncementsScreen.route)
                     }
 
-                    HomeScreenCard(Modifier.weight(1f), text = "Manage Photo Gallery") {
+                    HomeScreenCard(Modifier.weight(1f), text = "Manage Photo\nGallery") {
 
                                          navigateTo(navController, DestinationScreen.ManageAllPhotosScreen.route)
                     }
+                }
+                Card(
+                    modifier = Modifier
+                        .height(130.dp)
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .clickable {
+                            navigateTo(navController, DestinationScreen.CreateAccScreen.route)
+                        },
+                    colors = CardDefaults.cardColors(hex)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(8.dp),
+                            textAlign = TextAlign.Center,
+                            text = "Create Student Account",
+                            maxLines = 2,
+                            fontSize = 25.sp,
+                            fontFamily = FontFamily.SansSerif,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.padding(8.dp))
+                    }
+                    Spacer(modifier = Modifier.padding(16.dp))
+
                 }
 
             }
@@ -148,7 +180,7 @@ fun HomeScreenCard(
         shape = CardDefaults.outlinedShape,
         colors = CardDefaults.cardColors(hex)) {
         Row(
-            modifier = Modifier.fillMaxHeight(),
+            modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {

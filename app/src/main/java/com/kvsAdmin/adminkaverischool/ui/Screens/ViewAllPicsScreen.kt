@@ -33,17 +33,21 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.kvsAdmin.adminkaverischool.R
+import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
 import com.kvsAdmin.adminkaverischool.states.allImageUriList
 import com.kvsAdmin.adminkaverischool.states.profilesPics
 import com.kvsAdmin.adminkaverischool.ui.adminKvsViewModel
 import com.kvsAdmin.adminkaverischool.ui.theme.hex
+import com.kvsAdmin.util.navigateTo
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ViewAllPicsScreen(
+    navController: NavController,
     viewModel: adminKvsViewModel
 ) {
 
@@ -117,17 +121,22 @@ fun ViewAllPicsScreen(
                         .padding(8.dp),
                 ) {
                     items(allImageUriList) {
-                        AsyncImage(
-                            model = it,
-                            contentScale = ContentScale.Crop,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .clickable {
-
-                                }
-                        )
+                        if (it != null) {
+                            AsyncImage(
+                                model = it.bitmap,
+                                contentScale = ContentScale.Crop,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()
+                                    .clickable {
+                                        navigateTo(
+                                            navController = navController,
+                                            DestinationScreen.DeletePicsScreen.createRoute(uid = it.uid!!,type = "allPics")
+                                        )
+                                    }
+                            )
+                        }
                     }
                 }
             }

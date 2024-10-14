@@ -44,6 +44,7 @@ import com.kvsAdmin.adminkaverischool.data.Announcement
 import com.kvsAdmin.adminkaverischool.data.recievingPost
 import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
 import com.kvsAdmin.adminkaverischool.states.errorMsg
+import com.kvsAdmin.adminkaverischool.states.toastState
 import com.kvsAdmin.adminkaverischool.ui.Screens.DeleteAnnouncementButton
 import com.kvsAdmin.adminkaverischool.ui.Screens.DeletePostButton
 import com.kvsAdmin.adminkaverischool.ui.adminKvsViewModel
@@ -260,4 +261,12 @@ fun ProfileImage() : List<Uri?> {
     Spacer(modifier = Modifier.padding(8.dp))
     return uriState
 }
+
+@Composable
+fun OnToastMessage() {
+    if (toastState.value)
+        Toast.makeText(LocalContext.current, "Please Fill All Fields", Toast.LENGTH_LONG).show()
+    toastState.value = false
+}
+
 

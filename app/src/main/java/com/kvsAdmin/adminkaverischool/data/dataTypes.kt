@@ -1,7 +1,18 @@
 package com.kvsAdmin.adminkaverischool.data
 
+import android.graphics.Bitmap
 import android.net.Uri
 
+data class Account (
+    val studentName : String,
+    val parentsName: String,
+    val parentsNumber: String,
+    val standard: String,
+    val emailId : String,
+    val password : String,
+    val section : String,
+    val authId: String?
+)
 data class ToggleableInfo(
     val isChecked: Boolean,
     val text : String
@@ -9,6 +20,12 @@ data class ToggleableInfo(
 data class PicUid(
     val uid : String ?= ""
 )
+
+data class ImgData(
+    val uid :String ?="",
+    val bitmap : Bitmap?
+)
+
 data class Announcement(
     val classroom : String ?="",
     val section : String?="",
