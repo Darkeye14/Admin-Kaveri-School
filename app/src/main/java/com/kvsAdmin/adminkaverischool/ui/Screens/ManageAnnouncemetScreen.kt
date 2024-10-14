@@ -224,7 +224,9 @@ fun SelectClass(): String {
                 }
             },
             title = {
-                Text(text = "Select Class", fontWeight = FontWeight.Bold)
+                Text(text = "Select Class",
+                    color =Color.White,
+                    fontWeight = FontWeight.Bold)
             },
             modifier = Modifier
                 .fillMaxSize()
