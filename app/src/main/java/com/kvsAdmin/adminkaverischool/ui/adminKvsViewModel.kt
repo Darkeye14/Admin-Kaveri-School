@@ -1,27 +1,43 @@
 package com.kvsAdmin.adminkaverischool.ui
 
+
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.core.net.toUri
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageException
 import com.kvsAdmin.adminkaverischool.Constants.ADMINS
+import com.kvsAdmin.adminkaverischool.Constants.ALLPICS
 import com.kvsAdmin.adminkaverischool.Constants.ANNOUNCEMET
 import com.kvsAdmin.adminkaverischool.Constants.POSTS
+import com.kvsAdmin.adminkaverischool.Constants.STUDENTS
+import com.kvsAdmin.adminkaverischool.data.AllPicsUploadList
 import com.kvsAdmin.adminkaverischool.data.Announcement
-import com.kvsAdmin.adminkaverischool.data.Post
+import com.kvsAdmin.adminkaverischool.data.ImgData
+import com.kvsAdmin.adminkaverischool.data.PicUid
+import com.kvsAdmin.adminkaverischool.data.addingPost
+import com.kvsAdmin.adminkaverischool.data.recievingPost
 import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
+import com.kvsAdmin.adminkaverischool.states.allImageUriList
+import com.kvsAdmin.adminkaverischool.states.announcementsDataList
 import com.kvsAdmin.adminkaverischool.states.errorMsg
+import com.kvsAdmin.adminkaverischool.states.imageUriList
 import com.kvsAdmin.adminkaverischool.states.inProgress
 import com.kvsAdmin.adminkaverischool.states.onError
+import com.kvsAdmin.adminkaverischool.states.postsDataList
 import com.kvsAdmin.adminkaverischool.states.signIn
-import com.kvsAdmin.util.OnErrorMessage
 import com.kvsAdmin.util.navigateTo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -39,6 +55,61 @@ class adminKvsViewModel @Inject constructor(
     private val db: FirebaseFirestore,
     private val storage: FirebaseStorage
 ) : ViewModel() {
+
+    fun signUp1(
+        studentName: String,
+        parentsName: String,
+        parentsNumber: String,
+        standard : String,
+        email: String,
+        password: String,
+        section: String,
+        navController: NavController
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        inProgress.value = true
+
+        auth.createUserWithEmailAndPassword(email, password)
+
+            .addOnFailureListener {
+                handleException(it)
+            }
+            .addOnCompleteListener {
+
+                if (it.isSuccessful) {
+                    createAccount(standard,studentName,parentsName,parentsNumber, email, password,section)
+                    inProgress.value = false
+                    navigateTo(navController, DestinationScreen.HomeScreen.route)
+                } else {
+                    handleException(customMessage = " SignUp error")
+                }
+            }
+    }
+    private fun createAccount(
+        standard :String,
+        studentName: String,
+        parentsName: String,
+        parentsNumber: String,
+        email: String,
+        password: String,
+        section: String,
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        delay(1000)
+        val acc = com.kvsAdmin.adminkaverischool.data.Account(
+            studentName = studentName,
+            parentsName = parentsName,
+            parentsNumber = parentsNumber,
+            emailId = email,
+            password = password,
+            section = section,
+            standard = standard,
+            authId = auth.currentUser?.uid
+        )
+        db.collection(STUDENTS)
+            .document()
+            .set(acc)
+
+    }
+
 
     fun login(
         email: String,
@@ -97,6 +168,7 @@ class adminKvsViewModel @Inject constructor(
         }
     }
 
+
     fun handleException(
         exception: Exception? = null,
         customMessage: String = ""
@@ -120,6 +192,7 @@ class adminKvsViewModel @Inject constructor(
         inProgress.value = false
     }
 
+
     private fun afterLogin(
         navController: NavController
     ) = CoroutineScope(Dispatchers.Main).launch {
@@ -133,11 +206,15 @@ class adminKvsViewModel @Inject constructor(
         text: String
     ) = CoroutineScope(Dispatchers.IO).launch {
         val sortTime = Calendar.getInstance().time.time.toString()
+        val time = Calendar.getInstance().time.toString()
+        val uid = UUID.randomUUID().toString()
         val item = Announcement(
             classroom = classroom,
             section = section,
-            time = sortTime,
-            text = text
+            sortTime = sortTime,
+            text = text,
+            timeStamp = time,
+            uid = uid
         )
 
         db.collection(ANNOUNCEMET)
@@ -148,64 +225,287 @@ class adminKvsViewModel @Inject constructor(
     }
 
     fun onPost(
-        selectedImage: MutableList<Uri?>,
+        selectedImage: List<Uri?>,
         shortDisc: String,
         longDisc: String
     ) = CoroutineScope(Dispatchers.IO).launch {
         val uid = UUID.randomUUID().toString()
+        val sortTime = Calendar.getInstance().time.time.toString()
+        val time = Calendar.getInstance().time.toString()
         inProgress.value = true
+        val uidList = mutableStateListOf<String>()
 
-        val post = Post(
-            title = shortDisc,
-            disc = longDisc,
-            imageList = selectedImage,
-            uid = uid
-        )
-        db.collection(POSTS).document(uid).set(post)
-            .await()
-
-            if (selectedImage.isNotEmpty()){
-                selectedImage.forEach {
-                    uploadImage(it!!)
+        if (selectedImage.isNotEmpty()) {
+            selectedImage.forEach {
+                val uidSingle = UUID.randomUUID().toString()
+                uidList.add(uidSingle)
+                val storageRef = storage.reference
+                val imageRef = storageRef.child("PostImages/$uidSingle")
+                val uploadTask = it.let { it1 ->
+                    imageRef
+                        .putFile(it1!!)
                 }
+                uploadTask.addOnSuccessListener {
+                    it.metadata
+                        ?.reference
+                        ?.downloadUrl
+
+                    inProgress.value = false
+                }
+                    .addOnFailureListener {
+                        handleException(it)
+                    }
+                    .await()
             }
+
+            val post = addingPost(
+                title = shortDisc,
+                disc = longDisc,
+                imageUidList = uidList,
+                uid = uid,
+                sortTime = sortTime,
+                timeStamp = time
+            )
+            db.collection(POSTS).document(uid).set(post)
+                .await()
+
+        }
         inProgress.value = false
     }
 
-    fun uploadImage(
-        uri :Uri
+    fun uploadAllImage(
+        imgList: List<Uri?>
     ) = CoroutineScope(Dispatchers.IO).launch {
-        val uid = UUID.randomUUID().toString()
+
         val storageRef = storage.reference
-        val imageRef = storageRef.child("images/$uid")
-        val uploadTask = uri.let { it1 ->
-            imageRef
-                .putFile(it1)
+        imgList.forEach {
+            val imgId = UUID.randomUUID().toString()
+            val pfp = AllPicsUploadList(
+                uid = imgId
+            )
+            db.collection(ALLPICS).document(imgId).set(pfp)
+            val imageRef = storageRef.child("AllImages/$imgId")
+            val uploadTask = it.let { it1 ->
+                imageRef
+                    .putFile(it1!!)
+            }
+            uploadTask.addOnSuccessListener {
+                it.metadata
+                    ?.reference
+                    ?.downloadUrl
+                inProgress.value = false
+            }
+                .addOnFailureListener {
+                    handleException(it)
+                }
         }
-        uploadTask.addOnSuccessListener {
-            it.metadata
-                ?.reference
-                ?.downloadUrl
-            inProgress.value = false
+    }
+
+    init {
+        populatePost()
+    }
+
+    fun downloadMultipleImages(
+        uid: String,
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        val imageUri = mutableStateOf<Bitmap?>(null)
+
+        inProgress.value = true
+        try {
+            val maxDownloadSize = 5L * 1024 * 1024
+            val storageRef = FirebaseStorage.getInstance().reference
+            val bytes = storageRef.child("PostImages/$uid")
+                .getBytes(maxDownloadSize)
+                .await()
+            imageUri.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            val data = ImgData(
+                uid = uid,
+                bitmap = imageUri.value
+            )
+            imageUriList.add(data)
+
+
+        } catch (e : FirebaseFirestoreException){
+            handleException(e)
         }
+        catch (e : StorageException){
+            handleException(e)
+        }
+        catch (e: Exception) {
+            handleException(e)
+        }
+        inProgress.value = false
+    }
+
+    fun populatePost() = CoroutineScope(Dispatchers.IO).launch {
+        inProgress.value = true
+        db.collection(POSTS).orderBy("sortTime", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { value ->
+                if (value != null) {
+                    postsDataList.value = value.documents.mapNotNull {
+                        it.toObject<recievingPost>()
+                    }
+                    inProgress.value = false
+                }
+            }
             .addOnFailureListener {
-                handleException(it)
+                errorMsg.value = "Invalid User"
+                onError.value = true
+            }
+    }
+
+    fun populateAnnouncement(
+        classNo: String,
+        section: String = "A"
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        if (classNo.isNotEmpty() && section.isNotEmpty()) {
+            inProgress.value = true
+            db.collection(ANNOUNCEMET).document(classNo)
+                .collection(section)
+                .orderBy("sortTime", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener { value ->
+                    if (value != null) {
+                        announcementsDataList.value = value.documents.mapNotNull {
+                            it.toObject<Announcement>()
+                        }
+                        inProgress.value = false
+                    }
+                }
+                .addOnFailureListener {
+                    errorMsg.value = "Invalid User"
+                    onError.value = true
+                }
+        } else {
+            handleException(customMessage = "class number not selected")
+        }
+    }
+
+    fun onDeletePost(
+        postId: String
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        delay(1000)
+        inProgress.value = true
+        val post = db.collection(POSTS)
+            .whereEqualTo("uid", postId)
+            .get()
+            .await()
+        if (post.documents.isNotEmpty()) {
+            for (document in post) {
+                try {
+                    document.reference.delete().await()
+                } catch (e: FirebaseFirestoreException) {
+                    handleException(e)
+                } catch (e: Exception) {
+                    handleException(e)
+                }
             }
 
+        }
+        inProgress.value = false
+    }
+
+    fun deletePhoto(
+        postId: String,
+        type: String
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        delay(500)
+        inProgress.value = true
+        if (type == "allPics") {
+            db.collection(ALLPICS)
+                .document(postId)
+                .delete()
+
+            val storageRef = storage.reference
+            val desertRef = storageRef.child("AllImages/$postId")
+            desertRef.delete()
+                .addOnFailureListener {
+                    handleException(it)
+                }
+        }
+        else if(type == "postPics"){
+            val storageRef = storage.reference
+            val desertRef = storageRef.child("PostImages/$postId")
+            desertRef.delete()
+                .addOnFailureListener {
+                    handleException(it)
+                }
+        }
+
+        inProgress.value = false
+    }
+
+    fun onDeleteAnnouncement(
+        postId: String,
+        classNo: String,
+        section: String = "A"
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        inProgress.value = true
+
+
+        val post = db.collection(ANNOUNCEMET)
+            .document(classNo)
+            .collection(section)
+            .whereEqualTo("uid", postId)
+            .get()
+            .await()
+        if (post.documents.isNotEmpty()) {
+            for (document in post) {
+                try {
+                    document.reference.delete().await()
+                } catch (e: FirebaseFirestoreException) {
+                    handleException(e)
+                } catch (e: Exception) {
+                    handleException(e)
+                }
+            }
+        }
+        inProgress.value = false
     }
 
 
+    fun onShowAllPics() = CoroutineScope(Dispatchers.IO).launch {
+        inProgress.value = true
+
+        val snapShot = db.collection(ALLPICS)
+            .get()
+            .await()
+
+        for (doc in snapShot.documents) {
+            val post = doc.toObject<PicUid>()
+            downloadAllImages(post!!.uid)
+
+        }
+        inProgress.value = false
+    }
+
+    fun downloadAllImages(uid: String?) = CoroutineScope(Dispatchers.IO).launch {
+        val imageUri = mutableStateOf<Bitmap?>(null)
+        inProgress.value = true
+
+        try {
+            val maxDownloadSize = 5L * 1024 * 1024
+            val storageRef = FirebaseStorage.getInstance().reference
+
+            val bytes = storageRef.child("AllImages/$uid")
+                .getBytes(maxDownloadSize)
+                .await()
+            imageUri.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            val data = ImgData(
+                uid = uid,
+                bitmap = imageUri.value
+            )
+            allImageUriList.add(data)
 
 
-
-
+        } catch (e: Exception) {
+            handleException(e)
+        }
+        inProgress.value = false
+    }
 
 
 }
 
-@Composable
-fun CompError(modifier: Modifier = Modifier) {
-    if (onError.value) {
-        OnErrorMessage()
-    }
-}
+

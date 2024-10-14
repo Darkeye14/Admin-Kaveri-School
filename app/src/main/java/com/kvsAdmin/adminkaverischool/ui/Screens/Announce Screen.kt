@@ -48,8 +48,10 @@ import androidx.navigation.NavController
 import com.kvsAdmin.adminkaverischool.R
 import com.kvsAdmin.adminkaverischool.data.ToggleableInfo
 import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
+import com.kvsAdmin.adminkaverischool.states.onError
 import com.kvsAdmin.adminkaverischool.ui.adminKvsViewModel
 import com.kvsAdmin.adminkaverischool.ui.theme.hex
+import com.kvsAdmin.util.OnErrorMessage
 import com.kvsAdmin.util.navigateTo
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -270,6 +272,9 @@ fun AnnounceScreen(
                     }
                     Spacer(modifier = modifier.padding(16.dp))
 
+                    if (onError.value){
+                        OnErrorMessage()
+                    }
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(),

@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -39,9 +40,11 @@ import androidx.navigation.NavController
 import com.kvsAdmin.adminkaverischool.R
 import com.kvsAdmin.adminkaverischool.navigation.DestinationScreen
 import com.kvsAdmin.adminkaverischool.states.inProgress
+import com.kvsAdmin.adminkaverischool.states.onError
 import com.kvsAdmin.adminkaverischool.ui.adminKvsViewModel
 import com.kvsAdmin.adminkaverischool.ui.theme.hex
 import com.kvsAdmin.util.CommonProgressBar
+import com.kvsAdmin.util.OnErrorMessage
 import com.kvsAdmin.util.navigateTo
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,11 +58,17 @@ fun LoginScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(text = stringResource(id = R.string.app_name))
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        fontSize = 38.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily.Cursive,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = hex,
-                    titleContentColor = Color.White
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },
@@ -113,6 +122,7 @@ fun LoginScreen(
                 Text(
                     text = "Log In",
                     fontSize = 30.sp,
+                    color = Color.Black,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(8.dp)
@@ -125,6 +135,7 @@ fun LoginScreen(
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Done
                     ),
+                    colors = TextFieldDefaults.colors(),
                     onValueChange = {
                         emailState.value = it
                     },
@@ -137,6 +148,7 @@ fun LoginScreen(
                     }
                 )
                 OutlinedTextField(
+                    colors = TextFieldDefaults.colors(),
                     value = passwordState.value,
                     singleLine = true,
                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -167,6 +179,9 @@ fun LoginScreen(
                         .padding(8.dp)
                 ) {
                     Text(text = "Login")
+                }
+                if (onError.value){
+                    OnErrorMessage()
                 }
 
             }

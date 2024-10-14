@@ -1,8 +1,6 @@
 package com.kvsAdmin.adminkaverischool.ui.Screens
 
 import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,8 +9,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -21,17 +20,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,7 +34,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -53,10 +46,9 @@ import com.kvsAdmin.util.navigateTo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventPostsScreen(
+fun PicsScreen(
     navController: NavController,
-    viewModel: adminKvsViewModel,
-    modifier: Modifier = Modifier
+    viewModel: adminKvsViewModel
 ) {
     Scaffold(
         topBar = {
@@ -80,6 +72,12 @@ fun EventPostsScreen(
 
         }
     ) {
+        val uriState = remember {
+            mutableStateOf<List<Uri?>>(listOf())
+        }
+        val imageState = remember {
+            mutableStateOf(false)
+        }
         Box(
             modifier = Modifier
                 .background(Color.White)
@@ -87,19 +85,6 @@ fun EventPostsScreen(
                 .fillMaxHeight()
                 .fillMaxSize(),
         ) {
-
-            val imageState = remember {
-                mutableStateOf(false)
-            }
-            val titleState = remember {
-                mutableStateOf("")
-            }
-            val descriptionState = remember {
-                mutableStateOf("")
-            }
-            val uriState = remember {
-                mutableStateOf<List<Uri?>>(listOf())
-            }
             Image(
                 alpha = 0.40f,
                 painter = painterResource(id = R.drawable.whatsapp_kaveri),
@@ -108,6 +93,7 @@ fun EventPostsScreen(
                 modifier = Modifier
                     .fillMaxSize()
             )
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -115,89 +101,44 @@ fun EventPostsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Card(
+                Card (
                     modifier = Modifier
-                        .wrapContentSize()
-                        .padding(20.dp),
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(16.dp),
                     shape = CardDefaults.outlinedShape,
-                    colors = CardDefaults.cardColors(hex),
+                    colors = CardDefaults.cardColors(hex)
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Top
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            modifier = Modifier.padding(8.dp),
-                            textAlign = TextAlign.Center,
-                            text = "Create A Post",
-                            color = Color.White,
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        OutlinedTextField(
-                            value = titleState.value,
-                            onValueChange = {
-                                titleState.value = it
-                            },
-                            label = {
-                                Text(
-                                    text = "Title",
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                )
-                            },
-                            colors = TextFieldDefaults.colors(MaterialTheme.colorScheme.primary)
-                        )
-                        OutlinedTextField(
-                            value = descriptionState.value,
-                            onValueChange = {
-                                descriptionState.value = it
-                            },
-                            label = {
-                                Text(
-                                    text = "Full Description",
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                )
-                            },
-                            placeholder = {
-                                Text(
-                                    text = "Add all other information",
-                                    color = Color.Black,
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                )
-                            },
-                            colors = TextFieldDefaults.colors(MaterialTheme.colorScheme.primary)
-                        )
                         Spacer(modifier = Modifier.padding(8.dp))
-
 
                         Button(
                             onClick = {
                                 imageState.value = true
                             }
                         ) {
-                            Text(text = "Upload Images")
+                            Text(text = "Select Pics")
                         }
-                        if (imageState.value){
-                                   uriState.value = ProfileImage()
+                        if (imageState.value) {
+                            uriState.value = ProfileImage()
                         }
                         Spacer(modifier = Modifier.padding(8.dp))
-                        Button(
-                            onClick = {
-                                viewModel.onPost(uriState.value,titleState.value,descriptionState.value)
-                                navigateTo(navController,DestinationScreen.HomeScreen.route)
-                            }
-                        ) {
-                            Text(text = "Create Post")
+
+                        Button(onClick = {
+                            viewModel.uploadAllImage(uriState.value)
+                            navigateTo(navController, DestinationScreen.HomeScreen.route)
+                        }) {
+                            Text(text = "Post")
                         }
-                        Spacer(modifier = Modifier.padding(20.dp))
+                        Spacer(modifier = Modifier.padding(8.dp))
                     }
                 }
             }
         }
     }
 }
-
