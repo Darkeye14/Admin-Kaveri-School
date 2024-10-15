@@ -22,8 +22,8 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.kvsAdmin.adminkaverischool" />
-                  <option name="mobileSdkAppId" value="1:736994737062:android:20c4d1d721a6b73b8fed67" />
+                  <option name="appId" value="com.kvsAdminApl.adminkaverischool" />
+                  <option name="mobileSdkAppId" value="1:736994737062:android:02647f9113b8b06f8fed67" />
                   <option name="projectId" value="kaveri-school-59ddc" />
                   <option name="projectNumber" value="736994737062" />
                 </ConnectionSetting>

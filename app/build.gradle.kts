@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.kvsAdmin.adminkaverischool"
+    namespace = "com.kvsAdminApl.adminkaverischool"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.kvsAdmin.adminkaverischool"
+        applicationId = "com.kvsAdminApl.adminkaverischool"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
