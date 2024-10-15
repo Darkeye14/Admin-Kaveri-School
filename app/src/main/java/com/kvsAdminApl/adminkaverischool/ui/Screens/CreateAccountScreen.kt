@@ -128,6 +128,7 @@ fun SignUpScreen(
 
                 Text(
                     text = "Create Account",
+                    color = Color.Black,
                     fontSize = 30.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold,

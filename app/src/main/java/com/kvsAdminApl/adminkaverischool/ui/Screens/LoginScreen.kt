@@ -177,7 +177,7 @@ fun LoginScreen(
                 ) {
                     Text(text = "Login")
                 }
-                if (onError.value){
+                if (onError.value) {
                     OnErrorMessage()
                 }
 
