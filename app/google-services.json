@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:736994737062:android:f24764408ea8b8d28fed67",
+        "mobilesdk_app_id": "1:736994737062:android:02647f9113b8b06f8fed67",
         "android_client_info": {
-          "package_name": "com.kvsAdmin.adminkaverischool"
+          "package_name": "com.kvsAdminApl.adminkaverischool"
         }
       },
       "oauth_client": [],
